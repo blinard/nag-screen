@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Nag Screen</title>
+  </head>
+  <body>
+    <script>
+      // You can also require other files to run in this process
+      //require('./renderer.js')
+      let IndexPresenter = require("./indexPresenter.js").IndexPresenter;
+      let indexPresenter = new IndexPresenter();
+    </script>
+
+    <h1>Stop, you're too loud!</h1>
+    <!-- 
+    <h1>Nagging</h1>
+    <p>
+      We are using Node.js <script>document.write(process.versions.node)</script>,
+      Chromium <script>document.write(process.versions.chrome)</script>,
+      and Electron <script>document.write(process.versions.electron)</script>.
+    </p>
+    <p>
+      Hostname: <script>document.write(indexPresenter.hostname)</script>
+    </p>
+    -->
+  </body>
+</html>

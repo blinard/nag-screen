@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <title>Nag Executor</title>
+    </head>
+    <body>
+        <form>
+            <p>Seconds to nag:</p>
+            <input data-bind='value: secondsToNag, valueUpdate: "afterkeydown"' type="number" />
+            <p>Available clients:</p>
+            <div data-bind="template: { name: 'client-template', foreach: clients, as: 'client' }"></div>
+            
+            <script type="text/html" id="client-template">
+                <p><button data-bind="click: $parent.showNag, text: client.friendlyName"></button></p>
+            </script>
+            <br/>
+            <br/>
+            <br/>
+            <p><button data-bind="click: createSocketAndQueryClients">Start Socket</button></p>
+            <br/>
+            <br/>
+            <br/>
+            <p><button data-bind="click: stopSocket">Stop Socket</button></p>
+        </form>
+
+        <script src="http://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+        <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            var execModel = function() {
+                var self = this;
+                self.clients = ko.observableArray();
+                self.selectedClient = ko.observable();
+                self.secondsToNag = ko.observable(10);
+                self.execSocket = null;
+                self.queryInterval = null;
+
+                self.showNag = function(client) {
+                    var nagMessage = {
+                        actionType: 2,
+                        content: {
+                            targetClient: {
+                                clientId: client.clientId
+                            },
+                            displaySeconds: self.secondsToNag(),
+                            message: "Nothing"
+                        }
+                    }
+                    self.execSocket.send(JSON.stringify(nagMessage));
+                }
+
+                self.stopSocket = function() {
+                    self.clients.removeAll();
+                    if (self.queryInterval) {
+                        clearInterval(self.queryInterval);
+                        self.queryInterval = null;
+                    }
+
+                    if (self.execSocket) {
+                        self.execSocket.close();
+                        self.execSocket = null;
+                    }
+                }
+
+                self.createSocketAndQueryClients = function() {
+                    self.execSocket = new WebSocket("ws://" + window.location.host.replace(":8080", ":3000"));
+                    self.execSocket.onmessage = (message) => {
+                        var msgData = JSON.parse(message.data);
+                        switch(msgData.actionType) {
+                            case 0: //Registration Notification
+                                self.execSocket.send(JSON.stringify({ actionType: 3 }));
+                                self.queryInterval = setInterval(() => { this.execSocket.send(JSON.stringify({ actionType: 3 })); }, 1000);
+                                break;
+                            case 4: //Enumerate Clients Response
+                                var normalizedClients = msgData.content.clients.map((c) => { c.friendlyName = c.friendlyName || c.clientId; return c; });
+
+                                self.clients.removeAll();
+                                for (var c of normalizedClients) {
+                                    self.clients.push(c);
+                                }    
+                                break;
+                        }
+                    };
+                }
+
+                this.createSocketAndQueryClients();
+            }.bind(this);
+
+            ko.applyBindings(new execModel());
+        </script>
+    </body>
+</html>

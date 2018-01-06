@@ -1,0 +1,24 @@
+{
+  "name": "nag-screen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brad Linard",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/ws": "^3.2.0",
+    "del": "^3.0.0",
+    "electron": "^1.7.9",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.3",
+    "merge2": "^1.2.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "ws": "^3.3.2"
+  }
+}
