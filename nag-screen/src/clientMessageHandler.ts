@@ -22,7 +22,11 @@ export class ClientMessageHandler {
             case ActionType.PresentNagScreen:
                 let nagScreenMessage = <MessageWithContent<PresentNagScreenContent>>genericMessage;
                 //nagScreenMessage.content.message
-                mainWindow.show();
+                for (let i = 0; i < nagScreenMessage.content.displaySeconds; i++) {
+                    setTimeout(() => {
+                        mainWindow.show();
+                    }, i * 1000);
+                }
                 setTimeout(() => {
                     mainWindow.hide();
                 }, nagScreenMessage.content.displaySeconds * 1000);
