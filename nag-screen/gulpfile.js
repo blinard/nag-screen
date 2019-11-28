@@ -33,7 +33,7 @@ gulp.task("clean", function() {
 gulp.task("build", gulp.series("build:ts", "copy:views"))
 
 gulp.task("watch", gulp.series("build", function() {
-    gulp.watch('src/**/*', ["build", "copy:views"]);
+    gulp.watch('src/**/*', gulp.series("build", "copy:views"));
 }))
 
 gulp.task("run", gulp.series("watch", function(cb) {
